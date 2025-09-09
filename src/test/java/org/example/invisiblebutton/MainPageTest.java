@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -24,10 +25,10 @@ public class MainPageTest {
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
         // Fix the issue https://github.com/SeleniumHQ/selenium/issues/11750
-        options.addArguments("--remote-allow-origins=*");
+        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
 
 
         mainPage = new MainPage(driver);
@@ -42,10 +43,9 @@ public class MainPageTest {
     @DisplayName("Проверка отображения кнопки на сайте после 5 секундной прогрузки страницы")
     public void search() {
         driver.get("https://demoqa.com/dynamic-properties");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(6));
-
-        WebElement invisibleButton = driver.findElement(By.cssSelector("#visibleAfter"));
-        wait.until(ExpectedConditions.visibilityOf(invisibleButton));
-        assertTrue(invisibleButton.isEnabled(), "Кнопка не стала видимой");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        //WebElement invisibleButton = driver.findElement(By.cssSelector("#visibleAfter"));
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#visibleAfter")));
+        assertTrue(driver.findElement(By.cssSelector("#visibleAfter")).isDisplayed(), "Кнопка не стала видимой");
     }
 }
